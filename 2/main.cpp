@@ -1,5 +1,4 @@
 #include <stdarg.h>
-
 #include <regex>
 #include <string>
 #include <vector>
@@ -25,6 +24,7 @@ const char *DEFAULT = "\033[m";
 const char *FILE_NOT_FOUND = "no such file or directory\n";
 const char *PARSE_ERROR = "parse error\n";
 const char *COMMAND_NOT_FOUND = "command not found\n";
+const char* NOT_A_FILE = "not a file\n";
 struct Fat12Header {
     char BS_OEMName[8];  // OEM字符串，必须为8个字符，不足以空格填空
     ushort BPB_BytsPerSec;  // 每扇区字节数
@@ -62,6 +62,22 @@ typedef struct fileTree {
 void getRootEnts(int rootEntsCnt, int BPB_BytsPerSec, FILE *fp, RootEntry *re) {
     fseek(fp, 19 * BPB_BytsPerSec, SEEK_SET);
     fread(re, sizeof(RootEntry), rootEntsCnt, fp);
+}
+
+/**
+ * @brief 自定义的格式化输出，同 printf
+ *
+ * @param format
+ * @param ...
+ */
+void _printFormat(const char *format, ...) {
+    va_list ap;            // define args pointer
+    va_start(ap, format);  // point to the first argument
+    char *s = new char[strlen(format)+1];
+    vsprintf(s, format, ap);
+    _print((const char *)s, strlen((const char *)s));
+    va_end(ap);
+    delete[] s;
 }
 std::string addZeroToChars(char *source) {
     char dist[12];
@@ -178,30 +194,21 @@ void printFIle(ushort DIR_FstClus, FILE *fp, int size) {
         if (size <= 512) {
             memset(buf, 0, 515);
             fread(buf, 1, 512, fp);
-            _print((const char *)buf, strlen((const char *)buf));
+            _printFormat((const char *)buf);
         } else {
             if (offset == 0) memset(buf, 0, 512 * 3 + 3);
             fread(buf + 512 * offset, 512, 1, fp);
             offset += 1;
             if (offset == 3) {
-                _print((const char *)buf, strlen((const char *)buf));
+                _printFormat((const char *)buf);
                 offset = 0;
             }
         }
     } while ((DIR_FstClus = getNext(fp, DIR_FstClus)) < 0xFF7);
     if (offset != 0) {
-        _print((const char *)buf, strlen((const char *)buf));
+        _printFormat((const char *)buf);
     }
-    _print("\n", 1);
-}
-void _printFormat(const char *format, ...) {
-    va_list ap;            // define args pointer
-    va_start(ap, format);  // point to the first argument
-    char *s = new char[512];
-    vsprintf(s, format, ap);
-    _print((const char *)s, strlen((const char *)s));
-    va_end(ap);
-    delete[] s;
+    _printFormat("\n");
 }
 /**
  *
@@ -214,7 +221,7 @@ void traverse(fileTree *ft, std::string baseName, bool l = false) {
         baseName = baseName + '/';
     }
     if (!l) {
-        _print(baseName.c_str(), strlen(baseName.c_str()));
+        _printFormat(baseName.c_str());
         _print(":\n", 2);
     } else {
         if (baseName != "/") {
@@ -272,7 +279,7 @@ void traverse(fileTree *ft, std::string baseName, bool l = false) {
             }
         }
     }
-    _print("\n", 1);
+    _printFormat("\n");
     for (int i = 0; i < ft->childFileCnt + ft->childDirCnt; i++) {
         if (ft->childs[i].name != ".." && ft->childs[i].name != "." &&
             ft->childs[i].isDirectory)
@@ -342,7 +349,7 @@ void handler(fileTree *ft, FILE *fp) {
                 traverse(ft, "/");
             } else if (std::regex_search(input, LS_2)) {
                 /* printf("不受支持参数!\n"); */
-                _print(INVALID_OPTION, strlen(INVALID_OPTION));
+                _printFormat(INVALID_OPTION);
             } else if (std::regex_match(input, sm, LS_1)) {
                 if (!sm.str(1).empty() || !sm.str(4).empty()) {
                     if (sm.str(3).empty()) {
@@ -353,7 +360,7 @@ void handler(fileTree *ft, FILE *fp) {
                             traverse(found, sm.str(3), true);
                         else
                             /* printf("不存在的目录\n"); */
-                            _print(FILE_NOT_FOUND, strlen(FILE_NOT_FOUND));
+                            _printFormat(FILE_NOT_FOUND);
                     }
                 } else {
                     fileTree *found = ls(ft, sm.str(3), "/");
@@ -361,37 +368,40 @@ void handler(fileTree *ft, FILE *fp) {
                         traverse(found, sm.str(3));
                     else
                         /* printf("不存在的目录\n"); */
-                        _print(FILE_NOT_FOUND, strlen(FILE_NOT_FOUND));
+                        _printFormat(FILE_NOT_FOUND); 
                 }
             } else if (std::regex_match(input, LS_4)) {
                 traverse(ft, "/", true);
             } else {
                 /* printf("错误的参数\n"); */
-                _print(PARSE_ERROR, strlen(PARSE_ERROR));
+                _printFormat(PARSE_ERROR );
             }
         } else if (std::regex_match(input, CAT)) {
             if (std::regex_match(input, sm, CAT_1)) {
                 fileTree *found = ls(ft, sm.str(1), "/");
                 if (found != nullptr)
-                    printFIle(found->DIR_FstClus, fp, found->size);
+                    if (!found->isDirectory)
+                        printFIle(found->DIR_FstClus, fp, found->size);
+                    else
+                        _printFormat(NOT_A_FILE);
                 else
                     /* printf("不存在的文件\n"); */
-                    _print(FILE_NOT_FOUND, strlen(FILE_NOT_FOUND));
+                    _printFormat(FILE_NOT_FOUND);
             } else {
                 /* printf("参数错误\n"); */
-                _print(PARSE_ERROR, strlen(PARSE_ERROR));
+                _printFormat(PARSE_ERROR);
             }
         } else if (std::regex_match(input, EXIT)) {
             break;
         } else {
             /* printf("没有这个命令\n"); */
-            _print(COMMAND_NOT_FOUND, strlen(COMMAND_NOT_FOUND));
+            _printFormat(COMMAND_NOT_FOUND);
         }
     }
 }
 
 int main() {
-    FILE *fp = fopen("./a2.img", "rb");
+    FILE *fp = fopen("./a.img", "rb");
     fileTree ft;
     ft.DIR_FstClus = -12;
     ft.name = "/";
