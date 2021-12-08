@@ -2,9 +2,11 @@ cc = g++
 prom = fat12
 obj = func.o main.o
 
-fat12: $(obj)
+all: $(obj)
 	$(cc) -o  $(prom) $(obj) -no-pie -g
 
+run: all 
+	./fat12
 
 func.o:  my_print.asm
 	nasm -f elf64  my_print.asm -o func.o -g 
