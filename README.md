@@ -5,3 +5,6 @@
 
 编辑器：neovim, vscode
 
+我的 neovim 配置文件
+[neovim 配置](https://github.com/ayasa520/nvimdots),
+支持 nasm 与 C/C++ 联合编写/调试
