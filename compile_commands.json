@@ -1,0 +1,12 @@
+[
+ {
+  "directory": "/home/rikka/project/homework/OS/2/fat12",
+  "arguments": [
+   "g++",
+   "-m64",
+   "-c",
+   "main.cpp"
+  ],
+  "file": "main.cpp"
+ }
+]
