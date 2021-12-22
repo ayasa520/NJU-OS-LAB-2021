@@ -3,3 +3,5 @@
 .cache
 .idea
 新建文件夹
+*.bin
+*.o
