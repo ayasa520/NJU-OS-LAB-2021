@@ -30,7 +30,6 @@ print:
     mov eax, _NR_print
     ; 传递参数
     mov ebx, [esp + 4]
-    mov ecx, [esp + 8]
     int INT_VECTOR_SYS_CALL
     ret
 

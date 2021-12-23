@@ -45,7 +45,7 @@ PUBLIC int sys_get_ticks()
 	return ticks;
 }
 
-PUBLIC void sys_print(char* str,int len){
+PUBLIC void sys_print(char* str){
 
     disp_str(str);
 }

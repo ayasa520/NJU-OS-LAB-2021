@@ -99,7 +99,7 @@ void TestA()
 {
 	int i = 0;
 	while (1) {
-        printf("world");
+        printf("world ");
 		milli_delay(1000);
 	}
 }
