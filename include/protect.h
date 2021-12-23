@@ -12,15 +12,25 @@
 /* 存储段描述符/系统段描述符 */
 typedef struct s_descriptor		/* 共 8 个字节 */
 {
-	u16	limit_low;		/* Limit */
-	u16	base_low;		/* Base */
-	u8	base_mid;		/* Base */
-	u8	attr1;			/* P(1) DPL(2) DT(1) TYPE(4) */
+	u16	limit_low;		/* Limit 段界限*/
+	u16	base_low;		/* Base 段基址 1 (0:15) */
+	u8	base_mid;		/* Base  段基址 1 (16:23)*/
+	u8	attr1;			/* P(1) 段存在标志 DPL(2) 特权级 DT(1) 0:GDT, 1:LDT  TYPE(4) 段类型 数据段/代码段/系统段 */
 	u8	limit_high_attr2;	/* G(1) D(1) 0(1) AVL(1) LimitHigh(4) */
 	u8	base_high;		/* Base */
 }DESCRIPTOR;
 
-/* 门描述符 */
+/* 门描述符
+ *
+ * 任务门
+ *
+ * 调用门
+ *
+ * 中断门: 中断处理程序入口点, 中断门和陷阱门内选择子必须指向代码段描述符,
+ *         门内偏移量对应代码段入口点的偏移
+ *
+ * 陷阱门
+ * */
 typedef struct s_gate
 {
 	u16	offset_low;	/* Offset Low */
@@ -32,6 +42,10 @@ typedef struct s_gate
 	u16	offset_high;	/* Offset High */
 }GATE;
 
+// 1. 在发生特权级变化的转移时, 如果从外层向内层转移, 需要从 TSS 中去的内层 SS
+// 和esp 作为目标代码的 esp. 每个进程都有 TSS 
+// 2. ring0->ring1, 使用 ireted, 在 restart
+// (kernal.asm)中将进程表中reg末地址赋值给 TSS 中的 ring0 堆栈域(esp)
 typedef struct s_tss {
 	u32	backlink;
 	u32	esp0;		/* stack pointer to use during interrupt */
@@ -76,7 +90,7 @@ typedef struct s_tss {
 #define	SELECTOR_FLAT_C		0x08		// ┣ LOADER 里面已经确定了的.
 #define	SELECTOR_FLAT_RW	0x10		// ┃
 #define	SELECTOR_VIDEO		(0x18+3)	// ┛<-- RPL=3
-#define	SELECTOR_TSS		0x20		// TSS. 从外层跳到内存时 SS 和 ESP 的值从里面获得.
+#define	SELECTOR_TSS		0x20		// TSS. 从外层跳到内层时 SS 和 ESP 的值从里面获得.
 #define SELECTOR_LDT_FIRST	0x28
 
 #define	SELECTOR_KERNEL_CS	SELECTOR_FLAT_C
@@ -147,7 +161,7 @@ typedef struct s_tss {
 #define INT_VECTOR_SYS_CALL             0x90
 
 /* 宏 */
-/* 线性地址 → 物理地址 */
+/* 线性地址 → 物理地址 段基址+段内偏移, 没有分页的时候就是最终物理地址 */
 #define vir2phys(seg_base, vir)	(u32)(((u32)seg_base) + (u32)(vir))
 
 

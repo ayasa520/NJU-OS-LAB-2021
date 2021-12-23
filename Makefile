@@ -32,6 +32,9 @@ DASMOUTPUT	= kernel.bin.asm
 .PHONY : everything final image clean realclean disasm all buildimg
 
 # Default starting position
+#
+run : image
+	bochs
 nop :
 	@echo "why not \`make image' huh? :)"
 

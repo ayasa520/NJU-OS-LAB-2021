@@ -27,18 +27,18 @@ typedef struct s_stackframe {	/* proc_ptr points here				↑ Low			*/
 	u32	ss;		/*  ┛						┷High			*/
 }STACK_FRAME;
 
-
+/*"进程表", 进程的描述, 第一部分 regs 保存寄存器的值*/
 typedef struct s_proc {
 	STACK_FRAME regs;          /* process registers saved in stack frame */
 
-	u16 ldt_sel;               /* gdt selector giving ldt base and limit */
-	DESCRIPTOR ldts[LDT_SIZE]; /* local descriptors for code and data */
+    u16 ldt_sel;               /* gdt selector giving ldt base and limit */
+    DESCRIPTOR ldts[LDT_SIZE]; /* local descriptors for code and data */
 
-        int ticks;                 /* remained ticks */
-        int priority;
+    int ticks;                 /* remained ticks */
+    int priority;
 
-	u32 pid;                   /* process id passed in from MM */
-	char p_name[16];           /* name of the process */
+    u32 pid;                   /* process id passed in from MM */
+    char p_name[16];           /* name of the process */
 }PROCESS;
 
 typedef struct s_task {

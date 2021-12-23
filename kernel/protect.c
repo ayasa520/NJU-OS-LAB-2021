@@ -56,7 +56,7 @@ void	hwint15();
 /*======================================================================*
                             init_prot
  *----------------------------------------------------------------------*
- 初始化 IDT
+ 初始化 中断描述符表 IDT
  *======================================================================*/
 PUBLIC void init_prot()
 {
@@ -176,6 +176,7 @@ PUBLIC void init_prot()
 	PROCESS* p_proc	= proc_table;
 	u16 selector_ldt = INDEX_LDT_FIRST << 3;
 	for(i=0;i<NR_TASKS;i++){
+        // GDT 中保存 LDT 首地址
 		init_descriptor(&gdt[selector_ldt>>3],
 				vir2phys(seg2phys(SELECTOR_KERNEL_DS),
 					proc_table[i].ldts),
@@ -207,7 +208,7 @@ PUBLIC void init_idt_desc(unsigned char vector, u8 desc_type, int_handler handle
 /*======================================================================*
                            seg2phys
  *----------------------------------------------------------------------*
- 由段名求绝对地址
+ 由段名求绝对地址, 段基址
  *======================================================================*/
 PUBLIC u32 seg2phys(u16 seg)
 {
