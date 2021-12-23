@@ -1,7 +1,7 @@
 #include "type.h"
 #include "const.h"
 
-void printf(const char*s,...){
+int printf(const char*fmt,...){
     int i;
 	char buf[256];
 

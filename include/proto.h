@@ -32,15 +32,17 @@ PUBLIC void spurious_irq(int irq);
 
 /* clock.c */
 PUBLIC void clock_handler(int irq);
-
-
+PUBLIC int vsprintf(char *buf,const char* fmt,va_list args);
+PUBLIC  int     printf(const char *fmt, ...);
 /* 以下是系统调用相关 */
 
 /* proc.c */
+// 系统级
 PUBLIC  int     sys_get_ticks();        /* sys_call */
-
+PUBLIC void sys_print( char*,int);
 /* syscall.asm */
 PUBLIC  void    sys_call();             /* int_handler */
+
+// 用户级
 PUBLIC  int     get_ticks();
 PUBLIC void print( char*,int );
-PUBLIC void sys_print( char*,int);
