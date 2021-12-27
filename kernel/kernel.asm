@@ -139,9 +139,6 @@ csinit:		; “这个跳转指令强制使用刚刚初始化的结构”——<<O
 
 	xor	eax, eax
 	mov	ax, SELECTOR_TSS
-
-    ;  装载任务状态段寄存器 tr
-    ; 操作数是 tr 的段选择子, 从 GDT 找到相应的 TSS 段描述符, 将 TSS 段描述符基址和界限装入 tr 寄存器 
 	ltr	ax
 
 	;sti
@@ -345,33 +342,21 @@ sys_call:
         call    save
 
         sti
-
-        ; sys_foo 需要参数
-        push    ecx
-        push    ebx 
-
+        push ebx
         call    [sys_call_table + eax * 4]
-        add esp, 4*2;
-
         mov     [esi + EAXREG - P_STACKBASE], eax
-
+       pop ebx
         cli
 
         ret
 
 
 ; ====================================================================================
-;				    restart
-; ring0=>ring1
+;                                   restart
 ; ====================================================================================
 restart:
-    ; 此处为什么加 []: 在 nasm 中, [] 类似 C 中解引用
-    ; p_proc_ready 对于 nasm 来说是一个标签, 它的值是原本 C 语言中 p_proc_ready 的地址
-    ; 所以, 需要加 [] 获得的才是进程表的地址
-    ; 举例: 假设 C 中, 变量 p_proc_ready 地址是 0xa, 值是 0xb(也就是进程表的首地址)
-    ; 那么在 nasm 代码中, p_proc_ready 的值是 0xa, [p_proc_ready] 是 0xb
-	mov	esp, [p_proc_ready] ; p_proc_ready points to a TCB of the next process to be started
-	lldt	[esp + P_LDT_SEL]
+	mov	esp, [p_proc_ready]
+	lldt	[esp + P_LDT_SEL] 
 	lea	eax, [esp + P_STACKTOP]
 	mov	dword [tss + TSS3_S_SP0], eax
 restart_reenter:
@@ -381,6 +366,6 @@ restart_reenter:
 	pop	es
 	pop	ds
 	popad
-	add	esp, 4 ; 跳过 retaddr
+	add	esp, 4
 	iretd
 

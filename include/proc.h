@@ -27,18 +27,20 @@ typedef struct s_stackframe {	/* proc_ptr points here				↑ Low			*/
 	u32	ss;		/*  ┛						┷High			*/
 }STACK_FRAME;
 
-/*"进程表", 进程的描述, 第一部分 regs 保存寄存器的值*/
+
 typedef struct s_proc {
 	STACK_FRAME regs;          /* process registers saved in stack frame */
 
-    u16 ldt_sel;               /* gdt selector giving ldt base and limit */
-    DESCRIPTOR ldts[LDT_SIZE]; /* local descriptors for code and data */
+	u16 ldt_sel;               /* gdt selector giving ldt base and limit */
+	DESCRIPTOR ldts[LDT_SIZE]; /* local descriptors for code and data */
 
-    int ticks;                 /* remained ticks */
-    int priority;
-
-    u32 pid;                   /* process id passed in from MM */
-    char p_name[16];           /* name of the process */
+		int ticks_used;				/* 本次使用的 tick 数 */
+        int ticks;                 	/* 剩余 tick 数*/
+        int priority;				/*没用上, 实际是总需要 tick 数*/
+		int wake_up;
+	STATE state;
+	u32 pid;                   /* process id passed in from MM */
+	char p_name[16];           /* name of the process */
 }PROCESS;
 
 typedef struct s_task {
@@ -49,14 +51,27 @@ typedef struct s_task {
 
 
 /* Number of tasks */
-#define NR_TASKS	3
+#define NR_TASKS	(6+1)
 
 /* stacks of tasks */
 #define STACK_SIZE_TESTA	0x8000
 #define STACK_SIZE_TESTB	0x8000
 #define STACK_SIZE_TESTC	0x8000
 
-#define STACK_SIZE_TOTAL	(STACK_SIZE_TESTA + \
-				STACK_SIZE_TESTB + \
-				STACK_SIZE_TESTC)
+// #define STACK_SIZE_TOTAL	(STACK_SIZE_TESTA + \
+// 				STACK_SIZE_TESTB + \
+// 				STACK_SIZE_TESTC)
 
+#define STACK_SIZE_TOTAL	(STACK_SIZE_TESTA*6)
+
+typedef struct s_queue{
+	PROCESS* procs[NR_TASKS];
+	int begin;
+	int length;
+} QUEUE;
+
+typedef struct s_semaphore {
+	int value;
+	QUEUE queue;
+	int user;   	// 占用者
+} SEMAPHORE;

@@ -29,3 +29,26 @@ extern	char		task_stack[];
 extern  TASK            task_table[];
 extern	irq_handler	irq_table[];
 
+
+extern SEMAPHORE fileSrcLock;
+extern SEMAPHORE readCntChangeLock;
+extern SEMAPHORE readCntLock;
+extern SEMAPHORE writeCntChangeLock;
+extern SEMAPHORE mutex2Lock;
+extern SEMAPHORE mutexLock;
+extern SEMAPHORE readWriteLock;
+
+extern int writeCnt;
+extern int readCnt;
+
+extern QUEUE readyQueue;
+
+extern int find(QUEUE*q,int pid);
+extern void enqueue(QUEUE *q,PROCESS*proc);
+extern PROCESS* dequeue(QUEUE*q);
+extern void initQueue(QUEUE*q);
+extern void initSemaphore(SEMAPHORE*s,int val);
+extern PROCESS* getFront(QUEUE*q);
+extern PROCESS* getBack(QUEUE*q);
+extern int readOrWrite;
+extern char prompts[][20]; 

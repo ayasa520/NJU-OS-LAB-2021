@@ -56,7 +56,7 @@ void	hwint15();
 /*======================================================================*
                             init_prot
  *----------------------------------------------------------------------*
- 初始化 中断描述符表 IDT
+ 初始化 IDT
  *======================================================================*/
 PUBLIC void init_prot()
 {
@@ -176,7 +176,6 @@ PUBLIC void init_prot()
 	PROCESS* p_proc	= proc_table;
 	u16 selector_ldt = INDEX_LDT_FIRST << 3;
 	for(i=0;i<NR_TASKS;i++){
-        // GDT 中保存 LDT 首地址
 		init_descriptor(&gdt[selector_ldt>>3],
 				vir2phys(seg2phys(SELECTOR_KERNEL_DS),
 					proc_table[i].ldts),
@@ -208,7 +207,7 @@ PUBLIC void init_idt_desc(unsigned char vector, u8 desc_type, int_handler handle
 /*======================================================================*
                            seg2phys
  *----------------------------------------------------------------------*
- 由段名求绝对地址, 段基址
+ 由段名求绝对地址
  *======================================================================*/
 PUBLIC u32 seg2phys(u16 seg)
 {
@@ -265,11 +264,11 @@ PUBLIC void exception_handler(int vec_no, int err_code, int eip, int cs, int efl
 				};
 
 	/* 通过打印空格的方式清空屏幕的前五行，并把 disp_pos 清零 */
-	disp_pos = 0;
-	for(i=0;i<80*5;i++){
-		disp_str(" ");
-	}
-	disp_pos = 0;
+		disp_pos = 0;
+		for(i=0;i<80*5;i++){
+			disp_str(" ");
+		}
+		disp_pos = 0;
 
 	disp_color_str("Exception! --> ", text_color);
 	disp_color_str(err_description[vec_no], text_color);

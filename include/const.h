@@ -8,6 +8,10 @@
 #ifndef	_ORANGES_CONST_H_
 #define	_ORANGES_CONST_H_
 
+// 什么优先只能选一个
+#define READERS_FIRST
+// #define WRITERS_FIRST 
+// #define READERS_WRITERS
 
 /* EXTERN */
 #define	EXTERN	extern	/* EXTERN is defined as extern except in global.c */
@@ -60,8 +64,8 @@
 #define	FLOPPY_IRQ	6	/* floppy disk */
 #define	PRINTER_IRQ	7
 #define	AT_WINI_IRQ	14	/* at winchester */
-
+#define ROUND (100*HZ/1000) /*时间片为 10ms 对应的 tick 数*/
 /* system call */
-#define NR_SYS_CALL     2
+#define NR_SYS_CALL     6
 
 #endif /* _ORANGES_CONST_H_ */

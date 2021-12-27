@@ -11,7 +11,7 @@
 global	memcpy
 global	memset
 global  strcpy
-global  strlen
+global strlen
 
 ; ------------------------------------------------------------------------
 ; void* memcpy(void* es:p_dst, void* ds:p_src, int size);
@@ -114,9 +114,6 @@ strcpy:
 ; strcpy 结束-------------------------------------------------------------
 
 
-; ------------------------------------------------------------------------
-; int strlen(char* p_str);
-; ------------------------------------------------------------------------
 strlen:
         push    ebp
         mov     ebp, esp
