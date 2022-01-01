@@ -32,7 +32,7 @@ PUBLIC TASK task_table[NR_TASKS]= {
     {r1w,STACK_SIZE_TESTA,"D"},
     {r1w,STACK_SIZE_TESTA,"E"},
     {F,STACK_SIZE_TESTA,"F"},
-    {E,STACK_SIZE_TESTA,"E"}
+    {G,STACK_SIZE_TESTA,"G"}
 };
 #endif
 #ifdef WRITERS_FIRST
@@ -43,7 +43,7 @@ PUBLIC TASK task_table[NR_TASKS]= {
     {w1w,STACK_SIZE_TESTA,"D"},
     {w1w,STACK_SIZE_TESTA,"E"},
     {F,STACK_SIZE_TESTA,"F"},
-    {E,STACK_SIZE_TESTA,"E"}
+    {G,STACK_SIZE_TESTA,"G"}
 };
 #endif
 #ifdef READERS_WRITERS
@@ -54,7 +54,7 @@ PUBLIC TASK task_table[NR_TASKS]= {
     {rww,STACK_SIZE_TESTA,"D"},
     {rww,STACK_SIZE_TESTA,"E"},
     {F,STACK_SIZE_TESTA,"F"},
-    {E,STACK_SIZE_TESTA,"E"}
+    {G,STACK_SIZE_TESTA,"G"}
 };
 #endif
 
@@ -113,5 +113,7 @@ PUBLIC char prompts[][20] = {
     "%s %s.\n",
     "%s %s end.\n",
     "read",
-    "write"
+    "write",
+    "%s write\n",
+    "%s read %d\n"
 };

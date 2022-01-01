@@ -32,7 +32,7 @@ void rwr();
 void rww();
 void w1w();
 void F();
-void E();
+void G();
 /* i8259.c */
 PUBLIC void put_irq_handler(int irq, irq_handler handler);
 PUBLIC void spurious_irq(int irq);
@@ -60,8 +60,8 @@ PUBLIC void sys_clear();
 /* syscall.asm */
 PUBLIC  void    sys_call();             /* int_handler */
 PUBLIC  int     get_ticks();
-PUBLIC void wait();
-PUBLIC void signal();
+PUBLIC void _wait();
+PUBLIC void _signal();
 PUBLIC void sleep();
 PUBLIC void printf(const char*fmt,...);
 PUBLIC void printf_color(const char*fmt,int color,...);

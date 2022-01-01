@@ -145,22 +145,10 @@ PUBLIC void sys_clear(){
 		disp_pos = 0;
 
 
+        const char space[] =" ";
         for (int i = 0; i < 80 * 25; ++i) {
-			if (i==80) {
-                disp_pos=0;
-				if(readOrWrite){
-					printf("F write\n");
-				}else if(!readOrWrite){
-					printf("F read %d\n",readCnt);
-				}else{
-					i-=10;
-				}
-                disp_pos=80;
-			}
-			
-            const char space[] =" ";
-                disp_str((char*)space);
+            disp_str((char*)space);
         }
      
-        disp_pos = 160;
+        disp_pos = 0;
 }

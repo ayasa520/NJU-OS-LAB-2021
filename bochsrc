@@ -31,7 +31,7 @@ keyboard: keymap=/usr/share/bochs/keymaps/x11-pc-us.map
 # display_library: x, options="gui_debug"
 
 # 开启 gdb 远程调试
-#gdbstub: enabled=1, port=1234, text_base=0, data_base=0, bss_base=0;
+# gdbstub: enabled=1, port=1234, text_base=0, data_base=0, bss_base=0;
 
 # 让 bochs 内部的时间和外面一样慢, 可以显著降低 cpu 占用
 clock:sync=slowdown,time0=local

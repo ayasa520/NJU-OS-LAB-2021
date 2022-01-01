@@ -120,10 +120,11 @@ void r1r(){
 			_signal(&readCntChangeLock); 
 
 
-			readOrWrite = 0;
 
 		
 			printf_color(prompts[0],p_proc_ready->pid+9,p_proc_ready->p_name,prompts[3]);
+			readOrWrite = 0;
+
 			// // 读
 			printf_color(prompts[1],p_proc_ready->pid+9,p_proc_ready->p_name,prompts[3]);
 			milli_delay(p_proc_ready->ticks*1000/HZ);
@@ -144,9 +145,10 @@ void r1r(){
 void r1w(){
 	while(1){
 		_wait(&fileSrcLock); 	//直接申请资源就行了, 因为写写互斥, 读写互斥
-			readOrWrite = 1;
 
    		printf_color(prompts[0],p_proc_ready->pid+9,p_proc_ready->p_name,prompts[4]);
+			readOrWrite = 1;
+
 			// // 读
 		printf_color(prompts[1],p_proc_ready->pid+9,p_proc_ready->p_name,prompts[4]);
 		milli_delay(p_proc_ready->ticks*1000/HZ);
@@ -172,11 +174,12 @@ void w1r(){
 					_signal(&readCntChangeLock);
 				_signal(&mutexLock); // 不释放的话不能多个读者同时读
 			_signal(&mutex2Lock);
-			readOrWrite = 0;
 
 			// 读
 
 			printf_color(prompts[0],p_proc_ready->pid+9,p_proc_ready->p_name,prompts[3]);
+			readOrWrite = 0;
+
 			// // 读
 			printf_color(prompts[1],p_proc_ready->pid+9,p_proc_ready->p_name,prompts[3]);
 			milli_delay(p_proc_ready->ticks*1000/HZ);
@@ -202,10 +205,11 @@ void w1w(){
 		_signal(&writeCntChangeLock);
 			
 			_wait(&fileSrcLock);			// 互斥访问资源
-			readOrWrite = 1;
 
     
    		printf_color(prompts[0],p_proc_ready->pid+9,p_proc_ready->p_name,prompts[4]);
+			readOrWrite = 1;
+
 			// // 读
 		printf_color(prompts[1],p_proc_ready->pid+9,p_proc_ready->p_name,prompts[4]);
 		milli_delay(p_proc_ready->ticks*1000/HZ);
@@ -234,9 +238,10 @@ void rwr(){
 					_wait(&fileSrcLock);    // 允许同时多人读, 只有第一个读者需要申请资源
 			_signal(&readCntChangeLock); 
 		_signal(&readWriteLock);
-			readOrWrite = 0;
 
 			printf_color(prompts[0],p_proc_ready->pid+9,p_proc_ready->p_name,prompts[3]);
+			readOrWrite = 0;
+
 			// // 读
 			printf_color(prompts[1],p_proc_ready->pid+9,p_proc_ready->p_name,prompts[3]);
 			milli_delay(p_proc_ready->ticks*1000/HZ);
@@ -254,9 +259,10 @@ void rww(){
 		_wait(&readWriteLock);
 		_wait(&fileSrcLock); 	
 
-			readOrWrite = 1;
 
      		printf_color(prompts[0],p_proc_ready->pid+9,p_proc_ready->p_name,prompts[4]);
+			readOrWrite = 1;
+
 			// // 读
 			printf_color(prompts[1],p_proc_ready->pid+9,p_proc_ready->p_name,prompts[4]);
 			milli_delay(p_proc_ready->ticks*1000/HZ);
@@ -267,9 +273,10 @@ void rww(){
 	}
 }
 // 空, 因为就绪列表可能为空....这时就出错了, 所以加一个空的进程哈哈哈
-void E(){
+void G(){
 	while(1){
-
+	clear();
+    milli_delay(500*ROUND);
 	}
 }
 
@@ -279,8 +286,14 @@ void E(){
  */
 void F(){
 while(1){
-	clear();
-    sleep(500*ROUND);
+    if(readOrWrite){
+        /* printf("F write\n"); */
+        printf(prompts[5],p_proc_ready->p_name);
+    }else if(!readOrWrite&&readCnt!=0){
+        /* printf("F read %d\n",readCnt); */
+        printf(prompts[6],p_proc_ready->p_name,readCnt);
+    }
+    sleep(ROUND);
 }
 }
 // /*======================================================================*

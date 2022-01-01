@@ -62,7 +62,7 @@ typedef struct s_task {
 // 				STACK_SIZE_TESTB + \
 // 				STACK_SIZE_TESTC)
 
-#define STACK_SIZE_TOTAL	(STACK_SIZE_TESTA*6)
+#define STACK_SIZE_TOTAL	(STACK_SIZE_TESTA*7)
 
 typedef struct s_queue{
 	PROCESS* procs[NR_TASKS];
